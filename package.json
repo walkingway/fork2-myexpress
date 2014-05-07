@@ -1,0 +1,22 @@
+{
+  "name": "myexpress",
+  "version": "0.0.0",
+  "description": "Your Express App",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "bin": { 
+    "myexpress": "./bin/myexpress.js"
+  },
+  "keywords": [
+    "express"
+  ],
+  "author": "chengway",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^1.18.2",
+    "chai": "^1.9.1",
+    "supertest": "^0.12.0"
+  }
+}
