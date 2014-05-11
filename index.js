@@ -29,12 +29,12 @@ module.exports = function() {
     var index = 0;
     var stack = this.stack;
 
-    if(stack.length == 0) {
-      res.statusCode = 404;
-      res.setHeader('Content-Type', 'text/html');
-      res.end("404 - Not Found");
-      return;
-    }
+    // if(stack.length == 0) {
+    //   res.statusCode = 404;
+    //   res.setHeader('Content-Type', 'text/html');
+    //   res.end("404 - Not Found");
+    //   return;
+    // }
 
     function next(error) {
       var f = stack[index++];
@@ -61,7 +61,7 @@ module.exports = function() {
           } else {
             next(error);
           }
-        } else if(arity == 3) {
+        } else if(arity < 4) {
             f(req,res,next);
         } else {
           //arity == 4 && `next` is called without an error
@@ -79,3 +79,4 @@ module.exports = function() {
 
   return myexpress;
 }
+

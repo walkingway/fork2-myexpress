@@ -171,3 +171,41 @@ describe("Implement Error Handling",function() {
     request(app).get("/").expect("e1").end(done);
   });
 });
+
+describe("Implement App Embedding As Middleware",function() {
+  var app, subApp;
+  beforeEach(function(){
+    app = new express();
+    subApp = new express();
+  })
+
+  it("should pass unhandle request to parent",function(done) {
+    function m2(req,res) {
+      res.end("m2");
+    }
+
+    app.use(subApp);
+    app.use(m2);
+
+    request(app).get("/").expect("m2").end(done);
+  });
+
+  it("should pass unhandle error to parent",function(done) {
+    app = new express();
+    subApp = new express();
+
+    function m1(req,res,next) {
+      next("m1 error");
+    }
+
+    function e1(err,req,res,next) {
+      res.end(err);
+    }
+
+    subApp.use(m1);
+
+    app.use(subApp);
+    app.use(e1);
+    request(app).get("/").expect("m1 error").end(done);
+  });
+});
