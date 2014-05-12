@@ -1,4 +1,5 @@
 var http = require('http');
+var Layer = require('./lib/layer.js');
 
 module.exports = function() {
 
@@ -19,16 +20,21 @@ module.exports = function() {
 
   myexpress.stack = [];
 
-  myexpress.use = function(fun) {
-    
-    this.stack.push(fun);
+  myexpress.use = function(route,fun) {
+    if(typeof route == 'function'){
+      var transTofun = route;
+      var layer = new Layer('/',transTofun);
+    } else {
+      var layer = new Layer(route,fun);
+    }
+    this.stack.push(layer);
+    // this.stack.push(layer.handle);
   }
 
   myexpress.handle = function(req,res,out) {
 
     var index = 0;
     var stack = this.stack;
-
     // if(stack.length == 0) {
     //   res.statusCode = 404;
     //   res.setHeader('Content-Type', 'text/html');
@@ -37,7 +43,16 @@ module.exports = function() {
     // }
 
     function next(error) {
-      var f = stack[index++];
+
+      var layer = stack[index++];
+      var i = 0;
+      var f;
+      if (layer){
+        while(!layer.match(req.url)){
+          layer = stack[i++];
+        }
+        f = layer.handle;
+      }
 
       if(!f) {
         if(out) return out(error);
@@ -62,6 +77,7 @@ module.exports = function() {
             next(error);
           }
         } else if(arity < 4) {
+
             f(req,res,next);
         } else {
           //arity == 4 && `next` is called without an error
