@@ -20,10 +20,23 @@ module.exports = function() {
 
   myexpress.stack = [];
 
+  function trialingSlash(str){
+    if(str.substr(str.length-1, 1) == "/")
+    str = str.substr(0,str.length-1);
+    return str;
+  }
+
   myexpress.use = function(route,fun) {
     if(typeof route == 'function'){
       var transTofun = route;
       var layer = new Layer('/',transTofun);
+    } else if (typeof fun.handle === "function") {
+        var subLayer = fun.stack[0];
+        var subFun = subLayer.handle;
+        var subRoute = subLayer.layerPath;
+        var combineRoute = trialingSlash(route) + subRoute;
+        var layer = new Layer(combineRoute,subFun);
+        layer.outRoute = subRoute;
     } else {
       var layer = new Layer(route,fun);
     }
@@ -54,6 +67,7 @@ module.exports = function() {
         var params = layer.match(req.url).params;
         req.params = params;
         f = layer.handle;
+        if(layer.outRoute) req.url = layer.outRoute;
       }
 
       if(!f) {
