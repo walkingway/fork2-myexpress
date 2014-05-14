@@ -51,6 +51,8 @@ module.exports = function() {
         while(!layer.match(req.url)){
           layer = stack[i++];
         }
+        var params = layer.match(req.url).params;
+        req.params = params;
         f = layer.handle;
       }
 
