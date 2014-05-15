@@ -5,10 +5,10 @@ var request = require("supertest")
 var express = require("../");
 
 describe("app",function(){
+  var app = express();
   describe("create http server",function(){
-    var app = express();
     it("create your http server",function(done){
-      var server = http.createServer();
+      var server = http.createServer(app);
       request(server).get('/bar').expect(404).end(done);
     });
   });
@@ -19,12 +19,14 @@ describe("app",function(){
     before(function(done) {
       server = app.listen(port,done);
     });
-    it("should return an http.Server",function(){
-      expect(server).to.be.instanceof(http.server);
+
+    it("should return an http.Server",function() {
+      expect(server).to.be.instanceof(http.Server);
     });
-    it("responds to /foo with 404",function(done){
-      request("http://localhost:7000").get("/foo").expect(404).end(done);
-    });
+
+    it("responds to /foo with 404",function(done) {
+      request("http://localhost:" + port).get("/foo").expect(404).end(done);
+    })
   });
 });
 
@@ -46,15 +48,15 @@ describe(".use",function(){
 describe("calling middleware stack",function() {
   var app;
   beforeEach(function() {
-    app = new myexpress();
+    app = express();
   });
   
-  it("Should be able to call a single middleware",function(){
+  it("Should be able to call a single middleware",function(done){
     var m1 = function(req,res,next) {
       res.end("hello from m1");
     };
     app.use(m1);
-    request(qpp).get("/").expect("hello from m1").end(done);
+    request(app).get("/").expect("hello from m1").end(done);
 
   });
 
