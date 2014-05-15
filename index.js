@@ -1,5 +1,6 @@
 var http = require('http');
 var Layer = require('./lib/layer.js');
+var makeRoute = require('./lib/route.js');
 
 module.exports = function() {
 
@@ -44,30 +45,32 @@ module.exports = function() {
     // this.stack.push(layer.handle);
   }
 
+  myexpress.get = function(path,handle) {
+    var fun = makeRoute("GET",handle);
+    var layer = new Layer(path,fun,true);
+    this.stack.push(layer);
+  }
+
   myexpress.handle = function(req,res,out) {
 
     var index = 0;
     var stack = this.stack;
-    // if(stack.length == 0) {
-    //   res.statusCode = 404;
-    //   res.setHeader('Content-Type', 'text/html');
-    //   res.end("404 - Not Found");
-    //   return;
-    // }
 
     function next(error) {
 
       var layer = stack[index++];
-      var i = 0;
+      var i = index;
       var f;
       if (layer){
-        while(!layer.match(req.url)){
+        while(!layer.match(req.url) && i<stack.length){
           layer = stack[i++];
         }
-        var params = layer.match(req.url).params;
-        req.params = params;
-        f = layer.handle;
-        if(layer.outRoute) req.url = layer.outRoute;
+        if(layer.match(req.url)){
+          var params = layer.match(req.url).params;
+          req.params = params;
+          f = layer.handle;
+          if(layer.outRoute) req.url = layer.outRoute;
+        }
       }
 
       if(!f) {
