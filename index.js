@@ -1,6 +1,7 @@
 var http = require('http');
 var Layer = require('./lib/layer.js');
 var makeRoute = require('./lib/route.js');
+var methods = require('methods');
 
 module.exports = function() {
 
@@ -111,6 +112,14 @@ module.exports = function() {
     
     next();
   }
+
+  methods.forEach(function(method){
+    myexpress[method] = function(path, handler){
+      var fun = makeRoute(method.toLocaleUpperCase(), handler);
+      var layer = new Layer(path, fun, true);
+      this.stack.push(layer);
+    }
+  });
 
   return myexpress;
 }
