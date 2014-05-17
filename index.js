@@ -46,11 +46,11 @@ module.exports = function() {
     // this.stack.push(layer.handle);
   }
 
-  myexpress.get = function(path,handle) {
-    var fun = makeRoute("GET",handle);
-    var layer = new Layer(path,fun,true);
-    this.stack.push(layer);
-  }
+  // myexpress.get = function(path,handle) {
+  //   var fun = makeRoute("GET",handle);
+  //   var layer = new Layer(path,fun,true);
+  //   this.stack.push(layer);
+  // }
 
   myexpress.handle = function(req,res,out) {
 
