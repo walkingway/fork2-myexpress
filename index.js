@@ -1,7 +1,7 @@
 var http = require('http');
 var Layer = require('./lib/layer.js');
 var makeRoute = require('./lib/route.js');
-var methods = require('methods');
+var methods = require('methods').concat("all");
 
 module.exports = function() {
 
@@ -28,19 +28,19 @@ module.exports = function() {
     return str;
   }
 
-  myexpress.use = function(route,fun) {
-    if(typeof route == 'function'){
-      var transTofun = route;
+  myexpress.use = function(path,fun) {
+    if(typeof path == 'function'){
+      var transTofun = path;
       var layer = new Layer('/',transTofun);
     } else if (typeof fun.handle === "function") {
         var subLayer = fun.stack[0];
         var subFun = subLayer.handle;
-        var subRoute = subLayer.layerPath;
-        var combineRoute = trialingSlash(route) + subRoute;
-        var layer = new Layer(combineRoute,subFun);
-        layer.outRoute = subRoute;
+        var subPath = subLayer.layerPath;
+        var combinePath = trialingSlash(path) + subPath;
+        var layer = new Layer(combinePath,subFun);
+        layer.outPath = subPath;
     } else {
-      var layer = new Layer(route,fun);
+      var layer = new Layer(path,fun);
     }
     this.stack.push(layer);
     // this.stack.push(layer.handle);
@@ -70,7 +70,7 @@ module.exports = function() {
           var params = layer.match(req.url).params;
           req.params = params;
           f = layer.handle;
-          if(layer.outRoute) req.url = layer.outRoute;
+          if(layer.outPath) req.url = layer.outPath;
         }
       }
 
@@ -113,11 +113,24 @@ module.exports = function() {
     next();
   }
 
+  // methods.forEach(function(method){
+  //   myexpress[method] = function(path, handler){
+  //     var fun = makeRoute(method.toLocaleUpperCase(), handler);
+  //     var layer = new Layer(path, fun, true);
+  //     this.stack.push(layer);
+  //   }
+  // });
+
+  myexpress.route = function(path){
+    var route = makeRoute();
+    myexpress.use(path,route);
+    return route;
+  };
+
   methods.forEach(function(method){
-    myexpress[method] = function(path, handler){
-      var fun = makeRoute(method.toLocaleUpperCase(), handler);
-      var layer = new Layer(path, fun, true);
-      this.stack.push(layer);
+    myexpress[method] = function(path,handler){
+      myexpress.route(path)[method](handler);
+      return this;
     }
   });
 
