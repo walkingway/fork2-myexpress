@@ -10,7 +10,7 @@ module.exports = function() {
   var myexpress  = function(req,res,next) {
     // response.statusCode = 404;
     // response.end();
-    myexpress.monkey_patch(req,res);
+    
     myexpress.handle(req,res,next);
   }
 
@@ -57,11 +57,13 @@ module.exports = function() {
 
   myexpress.handle = function(req,res,out) {
 
+    myexpress.monkey_patch(req,res);
     var index = 0;
     var stack = this.stack;
-
-    function next(error) {
-
+    req.app = myexpress;
+    var isSub;
+    function next(error,isSub) {
+      if(isSub) req.app = myexpress;
       var layer = stack[index++];
       var i = index;
       var f;
@@ -78,7 +80,11 @@ module.exports = function() {
       }
 
       if(!f) {
-        if(out) return out(error);
+        // if(out) return out(error);
+        if(out){
+          isSub = true; 
+          return out(error,isSub);
+        }
         if(error) {
           res.statusCode = 500;
           res.setHeader('Content-Type', 'text/html');
@@ -140,6 +146,9 @@ module.exports = function() {
   myexpress.monkey_patch = function(req,res){
     req.__proto__ = request
     res.__proto__ = response;
+    req.res = res;
+    res.req = req;
+    // req.app = myexpress;
   }
 
   return myexpress;
