@@ -2,12 +2,15 @@ var http = require('http');
 var Layer = require('./lib/layer.js');
 var makeRoute = require('./lib/route.js');
 var methods = require('methods').concat("all");
+var request = require('./lib/request');
+var response = require('./lib/response');
 
 module.exports = function() {
 
   var myexpress  = function(req,res,next) {
     // response.statusCode = 404;
     // response.end();
+    myexpress.monkey_patch(req,res);
     myexpress.handle(req,res,next);
   }
 
@@ -133,6 +136,11 @@ module.exports = function() {
       return this;
     }
   });
+
+  myexpress.monkey_patch = function(req,res){
+    req.__proto__ = request
+    res.__proto__ = response;
+  }
 
   return myexpress;
 }
