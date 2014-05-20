@@ -11,3 +11,7 @@ fork2-myexpress
 [Lesson 7 - HTTP Verbs (node03)](https://gist.github.com/hayeah/8af3c2c52427c3e8b3bb)
 
 [Lesson 8 - Route Chaining (node03)](https://gist.github.com/hayeah/f0bf015fdeb0a08ffce5)
+
+[Lesson 9 - Express Dependency Injection (node03)](https://gist.github.com/hayeah/ff0c23ef1eb39f4dcd3a)
+
+[Lesson 10 - Monkey Patching Request And Response (node03)](https://gist.github.com/hayeah/b136e7631deaa362a716)
