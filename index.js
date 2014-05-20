@@ -86,9 +86,16 @@ module.exports = function() {
           return out(error,isSub);
         }
         if(error) {
-          res.statusCode = 500;
-          res.setHeader('Content-Type', 'text/html');
-          res.end("500 - Internal Error");
+          
+          if(error.statusCode == 406){
+            res.statusCode = 406;
+            res.end("406 Not Acceptable");
+          } else {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'text/html');
+            res.end("500 - Internal Error");
+          }
+          
         } else {
           res.statusCode = 404;
           res.setHeader('Content-Type', 'text/html');
