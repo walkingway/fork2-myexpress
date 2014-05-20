@@ -31,19 +31,19 @@ module.exports = function() {
     return str;
   }
 
-  myexpress.use = function(path,fun) {
+  myexpress.use = function(path,fun,option) {
     if(typeof path == 'function'){
       var transTofun = path;
-      var layer = new Layer('/',transTofun);
+      var layer = new Layer('/',transTofun,option);
     } else if (typeof fun.handle === "function") {
         var subLayer = fun.stack[0];
         var subFun = subLayer.handle;
         var subPath = subLayer.layerPath;
         var combinePath = trialingSlash(path) + subPath;
-        var layer = new Layer(combinePath,subFun);
+        var layer = new Layer(combinePath,subFun,option);
         layer.outPath = subPath;
     } else {
-      var layer = new Layer(path,fun);
+      var layer = new Layer(path,fun,option);
     }
     this.stack.push(layer);
     // this.stack.push(layer.handle);
@@ -132,7 +132,7 @@ module.exports = function() {
 
   myexpress.route = function(path){
     var route = makeRoute();
-    myexpress.use(path,route);
+    myexpress.use(path,route,true);
     return route;
   };
 
