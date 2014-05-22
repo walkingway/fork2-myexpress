@@ -17,3 +17,5 @@ fork2-myexpress
 [Lesson 10 - Monkey Patching Request And Response (node03)](https://gist.github.com/hayeah/b136e7631deaa362a716)
 
 [Lesson 11 - Content Negotiation (node03)](https://gist.github.com/hayeah/5b4f082bfc8ec24a268a)
+
+[Lesson 12 - res.send and Conditional Get (node03)](https://gist.github.com/hayeah/095cb6bfa54879efddcf)
